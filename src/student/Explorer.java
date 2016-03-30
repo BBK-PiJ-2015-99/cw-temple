@@ -46,21 +46,7 @@ public class Explorer {
         boolean searching = true;
         int counter = 0;
         GraphNode head;
-        head = new GraphNode(state.getCurrentLocation(), state.getDistanceToTarget(), null, state.getNeighbours());
         // track where we are in the graph that we're mapping
-        GraphNode curLoc = head;
-        while (searching){
-            GraphNode nextStep = curLoc.getBestNextNode();
-            if(nextStep != null){
-                state.moveTo(nextStep.getId());
-                nextStep.addChildren(state.getNeighbours()); 
-                curLoc.hasBeenVisited();
-                curLoc = nextStep;
-            } else {
-                //TODO: implement backtracking and trying a new path
-                searching = false;
-            }
-        }
     }
 
 
