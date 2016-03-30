@@ -78,6 +78,7 @@ public class MazePanel extends JPanel {
             tasty = ImageIO.read(new File(TASTY_PATH));
             background = ImageIO.read(new File(BACKGROUND_PATH));
         } catch (IOException e) {
+            System.out.println(PATH_PATH);
             throw new IllegalArgumentException("Can't find input file : " + e.toString());
         }
 
