@@ -1,6 +1,7 @@
 package game;
 
 import java.util.Objects;
+import java.util.Collection;
 
 /**
  * An instance maintains the status of a node -- it's id and its distance from the Orb.

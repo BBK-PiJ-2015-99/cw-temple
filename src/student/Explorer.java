@@ -45,41 +45,21 @@ public class Explorer {
     public void explore(ExplorationState state) {
         boolean searching = true;
         int counter = 0;
-        Collection<NodeStatus> nodesVisited = new ArrayList(); 
-        Collection<PreviousOption> pathsNotTaken = new ArrayList();
+        GraphNode head;
+        head = new GraphNode(state.getCurrentLocation(), state.getDistanceToTarget(), null, state.getNeighbours());
+        // track where we are in the graph that we're mapping
+        GraphNode curLoc = head;
         while (searching){
-            /*System.out.println("Distance to target:" + state.getDistanceToTarget() + " ---  Current Location:" + state.getCurrentLocation());
-            System.out.println("Number of accessible neighbours:" + nn.size());
-            */
-            Collection<NodeStatus> nn = state.getNeighbours();
-            NodeStatus nodeClosestToOrb = Collections.min(nn, null);
-
-            //calculate the node with the lowest distance to the orb and keep track of all available nodes
-            Long new_location=null;
-            boolean not_sure_is_new_location=true;
-            while(not_sure_is_new_location){    
-                new_location = nodeClosestToOrb.getId();
-                if (!nodesVisited.contains(nodeClosestToOrb)){
-                    not_sure_is_new_location=false;
-                } else if (nn.size()==0) {
-                    //there are no new tiles available - we're in a corner
-                    break;
-                }else{
-                    nn.remove(nodeClosestToOrb);
-                    nodeClosestToOrb = Collections.min(nn, null);
-                }
+            GraphNode nextStep = curLoc.getBestNextNode();
+            if(nextStep != null){
+                state.moveTo(nextStep.getId());
+                nextStep.addChildren(state.getNeighbours()); 
+                curLoc.hasBeenVisited();
+                curLoc = nextStep;
+            } else {
+                //TODO: implement backtracking and trying a new path
+                searching = false;
             }
-            if (nn.size()==0 && new_location == null)
-                //deal go back to the node with the node closest to the Orb
-            nodesVisited.add(nodeClosestToOrb);
-            nn.remove(nodeClosestToOrb);
-            if(nn.size()>0){
-                PreviousOption po = new PreviousOption(state.getCurrentLocation(), nn);
-                pathsNotTaken.add(po);
-            }
-            state.moveTo(nodeClosestToOrb.getId());
-            if (nodeClosestToOrb.getDistanceToTarget()==0)
-                break; 
         }
     }
 
