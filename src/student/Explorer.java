@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Explorer {
 
@@ -52,38 +53,40 @@ public class Explorer {
             List<Long> bestNextNode = null; 
             long currentLocation = state.getCurrentLocation();
             addAllNeighbours(maze, currentLocation, state.getNeighbours());
-            bestNextNode = maze.getBestNextNode(currentLocation, false);
-            if(bestNextNode!=null && bestNextNode.size() > 0){
-               maze.setVisited(currentLocation);
-               state.moveTo(bestNextNode.get(0));
-               if(state.getDistanceToTarget() == 0 )
-                    searching = false;
+            Set<Long> retList = maze.getNeighbours(currentLocation);
+            if(retList != null){
+                System.out.println("ADDED NEIGHBOURS" + retList.size() + "--"+ state.getNeighbours().size());
             }else{
-                // TODO - backtrack and try something else
-                
-                bestNextNode = maze.getBestNextNode(currentLocation, true);
-                if(bestNextNode!=null && bestNextNode.size() > 0){
-                    System.out.println("Going here next: " + bestNextNode.get(0) + " at: " + currentLocation );
-                    List<Long> backtrack = maze.getShortestPath(bestNextNode.get(0), currentLocation);
-                    for (Long l : backtrack){
-                        state.moveTo(l);
-                    }
+                System.out.println("Neighbours are nowhere to be found");
+            }
+            bestNextNode = maze.getBestNextNode(currentLocation, true);
+            if(bestNextNode!=null && bestNextNode.size() > 0){
+               if(retList.contains(bestNextNode.get(0))){
+                   maze.setVisited(currentLocation);
+                   state.moveTo(bestNextNode.get(0));
+                   if(state.getDistanceToTarget() == 0 )
+                        searching = false;
                 }
+             }else{
+                // TODO - backtrack and try something else
+                bestNextNode = maze.getBestNextNode(currentLocation, false);
+                System.out.println("Going here next: " + bestNextNode.get(0) + " at: " + currentLocation );
+                List<Long> shortestPath = maze.getShortestPath(currentLocation, bestNextNode.get(0));
+                System.out.println("Numbers of steps" + shortestPath.size());   
                 searching = false;
             }
         }
-        
     }
-
-
 
     /*
 
 
     */
     private void addAllNeighbours(Graph g, long thisNode, Collection<NodeStatus> nodes){
+        System.out.println("Adding neighbours for: " + thisNode + " -- " + nodes.size());
         for(NodeStatus ns :nodes ){
             g.addVertex(thisNode, ns.getId());
+            System.out.println("\t\tadding:" + ns.getId());
             g.setDistance(ns.getId(), ns.getDistanceToTarget());
         }
 

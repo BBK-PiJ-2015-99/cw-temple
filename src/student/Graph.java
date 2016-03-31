@@ -38,21 +38,38 @@ public class Graph{
     public void setVisited(long id){
         visited.add(id);
     }
+
     public void setDistance(long id, int distance){
         if(!distances.containsKey(id)){
             distances.put(id, distance);
         } 
     }
 
-    public List<Long> getBestNextNode(long id, boolean beenVisited){
+    public Set<Long> getNeighbours(long location){
+        if(!graph.containsKey(location)){
+            throw new IllegalArgumentException("Can't find neighbours for node that I don't know");
+        }
+        Set<Long> ret = (Set<Long>) graph.get(location);
+        return ret;
+    }
+
+
+
+    public List<Long> getBestNextNode(long id, boolean neighbours){
         Long bestNextNode = null;
         if(!graph.containsKey(id)){
-            throw new IllegalArgumentException("Can't determine best move for this node as it is unknown:" + id);
+            throw new IllegalArgumentException("Can't determine best move for this node as it is unknown:" + id + "--");
         }
-        Set<Long> nodesNeighbours = (Set) graph.get(id);
+        
+        Set<Long> nodes;
+        if(neighbours){
+            nodes = getNeighbours(id);
+        }else{
+            nodes = graph.keySet();
+        }
         List<GraphNode> candidates = new ArrayList(); 
-        for(long thisID : nodesNeighbours){
-            if(visited.contains(thisID) == beenVisited){
+        for(long thisID : nodes){
+            if(!visited.contains(thisID)){
                 int dist = (Integer) distances.get(thisID);
                 candidates.add(new GraphNode(thisID,dist));
             }
@@ -79,10 +96,10 @@ public class Graph{
             dist.put(l, 999_999_999);
             prev.put(l, null);
         }
-        dist.put(origin, 0); 
+        dist.put( origin, 0); 
 
         while(!vertices.isEmpty()){
-            Long current = getKeyWithLowestDistance(dist);
+            long current = getKeyWithLowestDistance(dist);
             if (current == (Long) destination ){
                 List<Long> temp_shortest_path = new ArrayList();
                 Long u = destination;
@@ -95,8 +112,11 @@ public class Graph{
                     shortest_path.add(temp_shortest_path.get(i) );
                 }
             }
+            System.out.println("Current (start):" + current);
             vertices.remove(current);
-            Set<Long> neighbours = (Set<Long> ) graph.get(current);
+            System.out.println("shortest path calculations:" + current);
+            Set<Long> neighbours = getNeighbours( current);
+            System.out.println("how many neighbours:" + neighbours.size());
             for (Long n : neighbours){
                 long alt = (long) dist.get(current) + 1;
                 if (alt < (long) dist.get(n)){
@@ -116,7 +136,8 @@ public class Graph{
         Set<Long> vertices = dist.keySet();
         for(Long l : vertices){
             if((int) dist.get(l)< smallest_dist){
-                lowest = (Long) dist.get(l);   
+                lowest = l;
+                smallest_dist = (int) dist.get(l);   
             }
         }
         return lowest;
