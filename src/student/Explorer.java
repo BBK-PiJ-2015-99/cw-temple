@@ -45,8 +45,27 @@ public class Explorer {
     public void explore(ExplorationState state) {
         boolean searching = true;
         int counter = 0;
-        GraphNode head;
-        // track where we are in the graph that we're mapping
+        Graph maze = new Graph();
+        
+        while(searching){
+            Long bestNextNode = null; 
+            long currentLocation = state.getCurrentLocation();
+            addAllNeighbours(maze, currentLocation, state.getNeighbours());
+            bestNextNode = maze.getBestNextNode(currentLocation);
+            if(bestNextNode!=null){
+               maze.setVisited(currentLocation);
+               state.moveTo(bestNextNode);
+            
+               if(state.getDistanceToTarget() == 0 )
+                    searching = false;
+            }else{
+                // TODO - backtrack and try something else
+                
+                System.out.println("Need to try something else." + maze.getBestNodeNotTaken() + " current: " + currentLocation);
+                searching = false;
+            }
+        }
+        
     }
 
 
@@ -55,9 +74,11 @@ public class Explorer {
 
 
     */
-    private long gotToPreviousFork(Collection<NodeStatus> nodes, ExplorationState state ){
-       return 12312; 
-
+    private void addAllNeighbours(Graph g, long thisNode, Collection<NodeStatus> nodes){
+        for(NodeStatus ns :nodes ){
+            g.addVertex(thisNode, ns.getId());
+            g.setDistance(ns.getId(), ns.getDistanceToTarget());
+        }
 
     }   
 
