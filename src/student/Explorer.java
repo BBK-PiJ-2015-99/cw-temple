@@ -8,6 +8,7 @@ import game.NodeStatus;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Explorer {
 
@@ -48,20 +49,26 @@ public class Explorer {
         Graph maze = new Graph();
         
         while(searching){
-            Long bestNextNode = null; 
+            List<Long> bestNextNode = null; 
             long currentLocation = state.getCurrentLocation();
             addAllNeighbours(maze, currentLocation, state.getNeighbours());
-            bestNextNode = maze.getBestNextNode(currentLocation);
-            if(bestNextNode!=null){
+            bestNextNode = maze.getBestNextNode(currentLocation, false);
+            if(bestNextNode!=null && bestNextNode.size() > 0){
                maze.setVisited(currentLocation);
-               state.moveTo(bestNextNode);
-            
+               state.moveTo(bestNextNode.get(0));
                if(state.getDistanceToTarget() == 0 )
                     searching = false;
             }else{
                 // TODO - backtrack and try something else
                 
-                System.out.println("Need to try something else." + maze.getBestNodeNotTaken() + " current: " + currentLocation);
+                bestNextNode = maze.getBestNextNode(currentLocation, true);
+                if(bestNextNode!=null && bestNextNode.size() > 0){
+                    System.out.println("Going here next: " + bestNextNode.get(0) + " at: " + currentLocation );
+                    List<Long> backtrack = maze.getShortestPath(bestNextNode.get(0), currentLocation);
+                    for (Long l : backtrack){
+                        state.moveTo(l);
+                    }
+                }
                 searching = false;
             }
         }
