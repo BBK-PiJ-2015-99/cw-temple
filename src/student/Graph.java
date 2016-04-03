@@ -46,10 +46,13 @@ public class Graph{
     }
 
     public Set<Long> getNeighbours(long location){
-        if(!graph.containsKey(location)){
-            throw new IllegalArgumentException("Can't find neighbours for node that I don't know");
+        Set<Long> ret = null;
+        for(long l : (Set<Long>) graph.keySet()){
+            ret = (Set<Long>) graph.get(location);
         }
-        Set<Long> ret = (Set<Long>) graph.get(location);
+        if(ret == null){
+            throw new IllegalArgumentException("Can't find neighbours for node that I don't know" + location);
+        }
         return ret;
     }
 
@@ -99,7 +102,7 @@ public class Graph{
         dist.put( origin, 0); 
 
         while(!vertices.isEmpty()){
-            long current = getKeyWithLowestDistance(dist);
+            long current = getKeyWithLowestDistance(dist, vertices);
             if (current == (Long) destination ){
                 List<Long> temp_shortest_path = new ArrayList();
                 Long u = destination;
@@ -113,13 +116,19 @@ public class Graph{
                 }
             }
             System.out.println("Current (start):" + current);
+             Set<Long> whatisin =  graph.keySet();
+            Set<Long> neighbours = new HashSet();
+            //TODO: I can only get the neighbours for current within the loop below. Not sure why, but has to be fixed
+            for(long l : whatisin){
+                if(l == current){
+                   neighbours  =getNeighbours(current); 
+                   System.out.println("What is in(also currrent):" + neighbours.size()  );
+                }
+            }
             vertices.remove(current);
-            System.out.println("shortest path calculations:" + current);
-            Set<Long> neighbours = getNeighbours( current);
-            System.out.println("how many neighbours:" + neighbours.size());
-            for (Long n : neighbours){
-                long alt = (long) dist.get(current) + 1;
-                if (alt < (long) dist.get(n)){
+            for (long n : neighbours){
+                int alt = (int) dist.get(current) + 1;
+                if (alt < (int) dist.get(n)){
                     dist.put(n, alt); 
                     prev.put(n, current);
                 }
@@ -129,12 +138,11 @@ public class Graph{
         return shortest_path;
     }    
 
-    private long getKeyWithLowestDistance(Map dist){
-        Long lowest = null;
+    private long getKeyWithLowestDistance(Map dist, Set<Long> vertices){
+        long lowest = -1;
         int smallest_dist = 999_999_999;
         
-        Set<Long> vertices = dist.keySet();
-        for(Long l : vertices){
+        for(long l : vertices){
             if((int) dist.get(l)< smallest_dist){
                 lowest = l;
                 smallest_dist = (int) dist.get(l);   

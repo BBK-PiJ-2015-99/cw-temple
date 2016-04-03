@@ -72,7 +72,19 @@ public class Explorer {
                 bestNextNode = maze.getBestNextNode(currentLocation, false);
                 System.out.println("Going here next: " + bestNextNode.get(0) + " at: " + currentLocation );
                 List<Long> shortestPath = maze.getShortestPath(currentLocation, bestNextNode.get(0));
-                System.out.println("Numbers of steps" + shortestPath.size());   
+                for(int i=0; i <= shortestPath.size()-1; i++){
+                    System.out.println(shortestPath.size() + "--" + i);
+                    if(shortestPath.get(i)!= null){
+                        System.out.println("This nodes neighbours.");
+                        for(Long l : maze.getNeighbours(i)){
+                         //   System.out.println("Neighbour:" + ns.getId());
+                        }
+                        System.out.println("Going to:" + shortestPath.get(i));
+                        //long l = shortestPath.get(i);
+                        //System.out.println();
+                        //state.moveTo(l);
+                    }
+                }
                 searching = false;
             }
         }
