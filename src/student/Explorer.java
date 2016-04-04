@@ -65,24 +65,18 @@ public class Explorer {
                 bestNextNode = maze.getBestNextNode(currentLocation, false);
                 long selectedNextStep;
                 int j=0;
+                long avg_visits= maze.averageVisitTimes();
                 do{
                     selectedNextStep = bestNextNode.get(j);
                     j++;
-                    
-                }while(selectedNextStep == currentLocation);
-                System.out.println("Going here next: " + selectedNextStep + " at: " + currentLocation );
+                }while( (selectedNextStep == currentLocation) && maze.getNumberOfVisits(selectedNextStep)<=3);
                 List<Long> shortestPath = maze.getShortestPath(currentLocation, selectedNextStep);
                 
                 for(int i=0; i <= shortestPath.size()-2; i++){
                     if(shortestPath.get(i)!= null){
                         Set<Long> nbs = maze.getNeighbours(shortestPath.get(i));
-                        System.out.println("At" + currentLocation + " going to:" + selectedNextStep + " which has neighbours:" + nbs + " currentLocation neighbours:" + maze.getNeighbours(currentLocation));
-                        //for(Long l : maze.getNeighbours(shortestPath.get(i))){
-                           // System.out.println("Neighbour:" + l);
-                        //}
-                        //long l = shortestPath.get(i);
-                        //System.out.println();
                         state.moveTo( shortestPath.get(i+1) );
+                        maze.setVisited(currentLocation);
                         currentLocation = state.getCurrentLocation();
                     }
                 }

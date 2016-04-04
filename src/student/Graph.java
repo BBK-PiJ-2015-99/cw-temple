@@ -35,6 +35,24 @@ public class Graph{
         bList.add(a);
     }
 
+    public long averageVisitTimes(){
+        Collection<Integer> visits = visited.values();
+        int size = visits.size();
+        long sum = 0;
+        for(int vals : visits){
+            sum+=vals;
+        }
+        return sum/size;
+    }
+
+    public int getNumberOfVisits(long node){
+        int retValue = 0;
+        if(visited.get(node) != null)
+            retValue = (int) visited.get(node);
+        //System.out.println("Node" + node + " --  " + visited.get(node));
+        return retValue;
+    }
+
     public void setVisited(long id){
         int new_value = 1;
         if(visited.containsKey(id)){
