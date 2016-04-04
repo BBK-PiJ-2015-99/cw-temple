@@ -14,6 +14,8 @@ public class Graph{
     Map graph;
     Map distances;
     Map visited;
+    Map vertextWeights;
+    Map reward;
 
     final int HASHMAP_INIT_SIZE = 5000;
 
@@ -21,12 +23,29 @@ public class Graph{
         graph = new HashMap(HASHMAP_INIT_SIZE);
         visited = new HashMap(HASHMAP_INIT_SIZE);
         distances = new HashMap(HASHMAP_INIT_SIZE);
+        vertextWeights = new HashMap(HASHMAP_INIT_SIZE);
+        reward = new HashMap(HASHMAP_INIT_SIZE);
     }
 
+    public void addVertexWeight(long a, long b, int length){
+       List<Long> weightsAB = new ArrayList(); 
+       List<Long> weightsBA = new ArrayList();
+       vertextWeights.put(weightsAB, length);
+       addVertex(a,b);
+    }
+
+    public void addReward(long position, int reward ){
+        if (reward>0)
+            this.reward.put(  position,  reward);
+    }
+   
+    public boolean hasReward(long node){
+        return reward.containsKey(node);
+    }
+ 
     public void addVertex(long a, long b){
         if(!graph.containsKey(a))
             graph.put(a,  new HashSet<Long>());
-        
         if(!graph.containsKey(b))
             graph.put(b, new HashSet<Long>());
         Set aList = (Set)  graph.get(a);

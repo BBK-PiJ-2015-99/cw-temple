@@ -2,6 +2,8 @@ package student;
 
 import game.EscapeState;
 import game.ExplorationState;
+import game.Node;
+import game.Edge;
 
 //DA
 import game.NodeStatus;
@@ -10,9 +12,11 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Explorer {
-
+    final int HASHMAP_INIT_SIZE = 5000;
     /**
      * Explore the cavern, trying to find the orb in as few steps as possible.
      * Once you find the orb, you must return from the function in order to pick
@@ -123,6 +127,33 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
+        Graph maze = new Graph();
+        Collection<Node> nodes = state.getVertices(); 
+        //Create a node id/node lookup so that existing algorithms continue to work
+        Map nodeLookup = new HashMap(HASHMAP_INIT_SIZE);
+        for(Node n : nodes){
+            //System.out.println("This node:" + n.getId() + " number of vertices:" + n.getExits().size() );
+            for(Edge e: n.getExits()){
+                maze.addVertexWeight(e.getSource().getId(), e.getDest().getId(), e.length() );
+            }
+            nodeLookup.put(n.getId(), n);
+            maze.addReward(n.getId(), n.getTile().getGold());
+        }
+        long door = state.getExit().getId();
+        long currentLocation = state.getCurrentNode().getId();
+        List<Long> shortestPath = maze.getShortestPath(currentLocation, door);
+        boolean first = true;
+        for(Long nextStep : shortestPath){
+            if(nextStep != null && !nextStep.equals((Long) currentLocation)){
+                state.moveTo( (Node) nodeLookup.get(nextStep) );
+                if(maze.hasReward(nextStep)){
+                    state.pickUpGold();
+                }
+                maze.setVisited(currentLocation);
+                currentLocation = state.getCurrentNode().getId();
+            }
+        }
+        state.moveTo(state.getExit());
         //TODO: Escape from the cavern before time runs out
     }
 }
