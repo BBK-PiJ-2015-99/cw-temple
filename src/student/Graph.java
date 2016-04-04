@@ -13,13 +13,13 @@ public class Graph{
 
     Map graph;
     Map distances;
-    Collection visited;
+    Map visited;
 
     final int HASHMAP_INIT_SIZE = 5000;
 
     public Graph(){
         graph = new HashMap(HASHMAP_INIT_SIZE);
-        visited = new ArrayList();
+        visited = new HashMap(HASHMAP_INIT_SIZE);
         distances = new HashMap(HASHMAP_INIT_SIZE);
     }
 
@@ -36,7 +36,11 @@ public class Graph{
     }
 
     public void setVisited(long id){
-        visited.add(id);
+        int new_value = 1;
+        if(visited.containsKey(id)){
+            new_value+= (int) visited.get(id); 
+        } 
+        visited.put(id, new_value);
     }
 
     public void setDistance(long id, int distance){
@@ -76,7 +80,7 @@ public class Graph{
         }
         List<GraphNode> candidates = new ArrayList(); 
         for(long thisID : nodes){
-            if(!visited.contains(thisID)){
+            if(!visited.containsKey(thisID)){
                 int dist = (Integer) distances.get(thisID);
                 candidates.add(new GraphNode(thisID,dist));
             }
