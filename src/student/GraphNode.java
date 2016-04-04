@@ -30,5 +30,9 @@ public class GraphNode implements Comparable<GraphNode> {
     public int compareTo(GraphNode other) {
         return Integer.compare(distance, other.distance);
     }
-
+    @Override
+    public String toString(){
+        return "GraphNode:" + getId() + " distance:" + getDistance(); 
+        
+    }
 }

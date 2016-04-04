@@ -46,17 +46,21 @@ public class Graph{
     }
 
     public Set<Long> getNeighbours(long location){
-        Set<Long> ret = null;
-        for(long l : (Set<Long>) graph.keySet()){
-            ret = (Set<Long>) graph.get(location);
-        }
+        Set<Long> ret = (Set<Long>) this.graph.keySet();
         if(ret == null){
-            throw new IllegalArgumentException("Can't find neighbours for node that I don't know" + location);
+            throw new IllegalArgumentException("There are no vertices in graph");
         }
+        //System.out.println("Searching FOR:" + location);
+        for(long l : (Set<Long>) graph.keySet()){
+            //System.out.println("Searching--" +l + "--" +location +"--");
+            if(l == location){
+                ret = (Set<Long>) graph.get(location);
+                
+            }
+        }
+        //System.out.println("Returning with:" + ret.size());
         return ret;
     }
-
-
 
     public List<Long> getBestNextNode(long id, boolean neighbours){
         Long bestNextNode = null;
@@ -78,6 +82,8 @@ public class Graph{
             }
         }
         List<Long> return_values = new ArrayList();
+        Collections.sort(candidates);
+        //Collections.reverse(return_values);
         for (GraphNode gn : candidates){
             return_values.add(gn.getId());
         }
@@ -92,7 +98,10 @@ public class Graph{
     **/
     public List<Long> getShortestPath(long origin, long destination){
         List<Long> shortest_path = new ArrayList();
-        Set<Long> vertices = graph.keySet();
+        Set<Long> vertices = new HashSet();
+        for(long l : (Set<Long>) graph.keySet()){
+            vertices.add(l);
+        }
         Map dist = new HashMap(HASHMAP_INIT_SIZE);
         Map prev = new HashMap(HASHMAP_INIT_SIZE);
         for (Long l : vertices  ){
@@ -100,7 +109,6 @@ public class Graph{
             prev.put(l, null);
         }
         dist.put( origin, 0); 
-
         while(!vertices.isEmpty()){
             long current = getKeyWithLowestDistance(dist, vertices);
             if (current == (Long) destination ){
@@ -115,16 +123,11 @@ public class Graph{
                     shortest_path.add(temp_shortest_path.get(i) );
                 }
             }
-            System.out.println("Current (start):" + current);
+            //System.out.println("Current (start):" + current);
              Set<Long> whatisin =  graph.keySet();
             Set<Long> neighbours = new HashSet();
             //TODO: I can only get the neighbours for current within the loop below. Not sure why, but has to be fixed
-            for(long l : whatisin){
-                if(l == current){
-                   neighbours  =getNeighbours(current); 
-                   System.out.println("What is in(also currrent):" + neighbours.size()  );
-                }
-            }
+            neighbours  =getNeighbours(current); 
             vertices.remove(current);
             for (long n : neighbours){
                 int alt = (int) dist.get(current) + 1;
@@ -135,7 +138,9 @@ public class Graph{
             }
         }
         
-        return shortest_path;
+       //System.out.println(shortest_path);
+      // Collections.reverse(shortest_path);
+       return shortest_path;
     }    
 
     private long getKeyWithLowestDistance(Map dist, Set<Long> vertices){

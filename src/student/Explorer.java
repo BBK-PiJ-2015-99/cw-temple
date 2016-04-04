@@ -54,39 +54,41 @@ public class Explorer {
             long currentLocation = state.getCurrentLocation();
             addAllNeighbours(maze, currentLocation, state.getNeighbours());
             Set<Long> retList = maze.getNeighbours(currentLocation);
-            if(retList != null){
-                System.out.println("ADDED NEIGHBOURS" + retList.size() + "--"+ state.getNeighbours().size());
-            }else{
-                System.out.println("Neighbours are nowhere to be found");
-            }
             bestNextNode = maze.getBestNextNode(currentLocation, true);
             if(bestNextNode!=null && bestNextNode.size() > 0){
                if(retList.contains(bestNextNode.get(0))){
                    maze.setVisited(currentLocation);
                    state.moveTo(bestNextNode.get(0));
-                   if(state.getDistanceToTarget() == 0 )
-                        searching = false;
                 }
              }else{
                 // TODO - backtrack and try something else
                 bestNextNode = maze.getBestNextNode(currentLocation, false);
-                System.out.println("Going here next: " + bestNextNode.get(0) + " at: " + currentLocation );
-                List<Long> shortestPath = maze.getShortestPath(currentLocation, bestNextNode.get(0));
-                for(int i=0; i <= shortestPath.size()-1; i++){
-                    System.out.println(shortestPath.size() + "--" + i);
+                long selectedNextStep;
+                int j=0;
+                do{
+                    selectedNextStep = bestNextNode.get(j);
+                    j++;
+                    
+                }while(selectedNextStep == currentLocation);
+                System.out.println("Going here next: " + selectedNextStep + " at: " + currentLocation );
+                List<Long> shortestPath = maze.getShortestPath(currentLocation, selectedNextStep);
+                
+                for(int i=0; i <= shortestPath.size()-2; i++){
                     if(shortestPath.get(i)!= null){
-                        System.out.println("This nodes neighbours.");
-                        for(Long l : maze.getNeighbours(i)){
-                         //   System.out.println("Neighbour:" + ns.getId());
-                        }
-                        System.out.println("Going to:" + shortestPath.get(i));
+                        Set<Long> nbs = maze.getNeighbours(shortestPath.get(i));
+                        System.out.println("At" + currentLocation + " going to:" + selectedNextStep + " which has neighbours:" + nbs + " currentLocation neighbours:" + maze.getNeighbours(currentLocation));
+                        //for(Long l : maze.getNeighbours(shortestPath.get(i))){
+                           // System.out.println("Neighbour:" + l);
+                        //}
                         //long l = shortestPath.get(i);
                         //System.out.println();
-                        //state.moveTo(l);
+                        state.moveTo( shortestPath.get(i+1) );
+                        currentLocation = state.getCurrentLocation();
                     }
                 }
-                searching = false;
             }
+            if(state.getDistanceToTarget() == 0 )
+                searching = false;
         }
     }
 
@@ -95,10 +97,8 @@ public class Explorer {
 
     */
     private void addAllNeighbours(Graph g, long thisNode, Collection<NodeStatus> nodes){
-        System.out.println("Adding neighbours for: " + thisNode + " -- " + nodes.size());
         for(NodeStatus ns :nodes ){
             g.addVertex(thisNode, ns.getId());
-            System.out.println("\t\tadding:" + ns.getId());
             g.setDistance(ns.getId(), ns.getDistanceToTarget());
         }
 
